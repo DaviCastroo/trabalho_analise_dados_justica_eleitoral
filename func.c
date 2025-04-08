@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 19000
+#define MAX 18391
 
 typedef struct {
     int id;
@@ -11,7 +11,7 @@ typedef struct {
     int ano_eleicao;
 } Processos;
 
-// Prototipagem
+// Prototipagem das funções 
 void ordenarPorId(Processos processos[], int qtd);
 void swapProcesso(Processos *a, Processos *b);
 int particao_id(Processos v[], int inf, int sup);
@@ -44,7 +44,8 @@ int main() {
     return 0;
 }
 
-// === Funções auxiliares ===
+// Funções usadas para as operações //
+    //Funções para ordenar por ID//
 
 void swapProcesso(Processos *a, Processos *b) {
     Processos temp = *a;
