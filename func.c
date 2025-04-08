@@ -1,5 +1,7 @@
 #include <stdio.h>
+
 #include <stdlib.h>
+
 #define MAX 18391
 
 typedef struct {
@@ -9,16 +11,17 @@ typedef struct {
     int id_classe;
     int id_assunto;
     int ano_eleicao;
-} Processos;
+}
+Processos;
 
 // Prototipagem das funções 
 void ordenarPorId(Processos processos[], int qtd);
-void swapProcesso(Processos *a, Processos *b);
+void swapProcesso(Processos * a, Processos * b);
 int particao_id(Processos v[], int inf, int sup);
 void quicksort_id(Processos v[], int inf, int sup);
 
 int main() {
-    FILE *arquivo;
+    FILE * arquivo;
     Processos p[MAX];
     int qtd_processos = 0;
 
@@ -31,26 +34,45 @@ int main() {
     char buffer[200];
     fgets(buffer, sizeof(buffer), arquivo); // pula o cabeçalho
 
-    while (fscanf(arquivo, "%d,\"%[^\"]\",%[^,],{%d},{%d},%d\n",
-                  &p[qtd_processos].id, p[qtd_processos].numero, p[qtd_processos].data_ajuizamento,
-                  &p[qtd_processos].id_classe, &p[qtd_processos].id_assunto, &p[qtd_processos].ano_eleicao) == 6) {
+    while (fscanf(arquivo, "%d,\"%[^\"]\",%[^,],{%d},{%d},%d\n", &
+            p[qtd_processos].id, p[qtd_processos].numero, p[qtd_processos].data_ajuizamento, &
+            p[qtd_processos].id_classe, & p[qtd_processos].id_assunto, & p[qtd_processos].ano_eleicao) == 6) {
+        //  printf("Lido ID: %d\n", p[qtd_processos].id); // debug    
         qtd_processos++;
+        if (qtd_processos >= MAX) {
+            printf("Aviso: limite máximo de processos atingido (%d).\n", MAX);
+            break;
+        }
+
+    }
+
+    ordenarPorId(p, qtd_processos);
+    FILE * saida = fopen("Ordenacao_id.csv", "w");
+    if (saida == NULL) {
+        printf("Erro ao criar arquivo.\n");
+        return 1;
+    }
+    for (int i = 0; i < qtd_processos; i++) {
+        fprintf(saida, "%d,\"%s\",%s,{%d},{%d},%d\n",
+            p[i].id, p[i].numero, p[i].data_ajuizamento,
+            p[i].id_classe, p[i].id_assunto, p[i].ano_eleicao);
     }
 
     fclose(arquivo);
 
-    ordenarPorId(p, qtd_processos);
+    fclose(saida);
+    printf("Aquivo 'Ordenacao_id gerado.\n'");
 
     return 0;
 }
 
 // Funções usadas para as operações //
-    //Funções para ordenar por ID//
+//Funções para ordenar por ID//
 
-void swapProcesso(Processos *a, Processos *b) {
-    Processos temp = *a;
-    *a = *b;
-    *b = temp;
+void swapProcesso(Processos * a, Processos * b) {
+    Processos temp = * a;
+    * a = * b;
+    * b = temp;
 }
 
 int particao_id(Processos v[], int inf, int sup) {
@@ -62,7 +84,7 @@ int particao_id(Processos v[], int inf, int sup) {
         while (v[i].id < pivot) i++;
         while (v[j].id > pivot) j--;
         if (i <= j) {
-            swapProcesso(&v[i], &v[j]);
+            swapProcesso( & v[i], & v[j]);
             i++;
             j--;
         }
