@@ -25,15 +25,20 @@ int main() {
 
 
     for (int i = 0; i < NumProcesso; i++) {
-        fprintf(saida, "%s,\"%s\",%s,{%s},{%s},%d\n",
-            processos[i].id,
-            processos[i].numero,
-            processos[i].data_ajuizamento,
-            processos[i].id_classe,
-            processos[i].id_assunto,
-            processos[i].ano_eleicao);
+        // Verifica se o processo está realmente preenchido
+        if (strlen(processos[i].id) == 0 || strlen(processos[i].numero) == 0) {
+            continue; // pula registro inválido
+        }
     
+        fprintf(saida, "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d\n",
+                processos[i].id,
+                processos[i].numero,
+                processos[i].data_ajuizamento,
+                processos[i].id_classe,
+                processos[i].id_assunto,
+                processos[i].ano_eleicao);
     }
+    
 
     fclose(saida);
     free(processos);
