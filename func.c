@@ -1,106 +1,122 @@
+#include "func.h"  
 #include <stdio.h>
-
 #include <stdlib.h>
+#include <string.h>
 
-#define MAX 18391
+Processo *LerArquivo(const char *nomeArquivo) {
+    int N = 0;
+    char linha[2048];
 
-typedef struct {
-    int id;
-    char numero[30];
-    char data_ajuizamento[25];
-    int id_classe;
-    int id_assunto;
-    int ano_eleicao;
-}
-Processos;
-
-// Prototipagem das funções 
-void ordenarPorId(Processos processos[], int qtd);
-void swapProcesso(Processos * a, Processos * b);
-int particao_id(Processos v[], int inf, int sup);
-void quicksort_id(Processos v[], int inf, int sup);
-
-int main() {
-    FILE * arquivo;
-    Processos p[MAX];
-    int qtd_processos = 0;
-
-    arquivo = fopen("processos.csv", "r");
+    FILE *arquivo = fopen(nomeArquivo, "r");
     if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return 1;
+        printf("ERRO! Falha ao abrir o arquivo.\n");
+        return NULL;
     }
 
-    char buffer[200];
-    fgets(buffer, sizeof(buffer), arquivo); // pula o cabeçalho
+    Processo *processos = (Processo *)malloc(NumProcesso * sizeof(Processo));
+    if (processos == NULL) {
+        printf("Nao foi possivel alocar memoria para a tabela!\n");
+        fclose(arquivo);
+        return NULL;
+    }
 
-    while (fscanf(arquivo, "%d,\"%[^\"]\",%[^,],{%d},{%d},%d\n", &
-            p[qtd_processos].id, p[qtd_processos].numero, p[qtd_processos].data_ajuizamento, &
-            p[qtd_processos].id_classe, & p[qtd_processos].id_assunto, & p[qtd_processos].ano_eleicao) == 6) {
-        //  printf("Lido ID: %d\n", p[qtd_processos].id); // debug    
-        qtd_processos++;
-        if (qtd_processos >= MAX) {
-            printf("Aviso: limite máximo de processos atingido (%d).\n", MAX);
-            break;
+    // Ignora o cabeçalho
+    fgets(linha, sizeof(linha), arquivo);
+
+    while (fgets(linha, sizeof(linha), arquivo) && N < NumProcesso) {
+        // Remove quebras de linha do final da string
+        linha[strcspn(linha, "\r\n")] = '\0';
+
+        // Pula linhas vazias
+        if (strlen(linha) == 0) continue;
+
+        char *token;
+        int campo = 0;
+        int i = 0;
+        int len = strlen(linha);
+        int pos = 0;
+
+        while (campo < 6 && pos < len) {
+            char valor[TAM_MAX] = "";
+            int j = 0;
+
+            if (linha[pos] == '{') {
+                // campo multivalorado
+                pos++;
+                while (linha[pos] != '}' && linha[pos] != '\0') {
+                    valor[j++] = linha[pos++];
+                }
+                valor[j] = '\0';
+                pos++; // pula '}'
+                if (linha[pos] == ',') pos++;
+            } else if (linha[pos] == '"') {
+                // campo entre aspas
+                pos++;
+                while (linha[pos] != '"' && linha[pos] != '\0') {
+                    valor[j++] = linha[pos++];
+                }
+                valor[j] = '\0';
+                pos++; // pula '"'
+                if (linha[pos] == ',') pos++;
+            } else {
+                // campo simples
+                while (linha[pos] != ',' && linha[pos] != '\0' && linha[pos] != '\n') {
+                    valor[j++] = linha[pos++];
+                }
+                valor[j] = '\0';
+                if (linha[pos] == ',') pos++;
+            }
+
+            switch (campo) {
+                case 0: strncpy(processos[N].id, valor, TAM_MAX); break;
+                case 1: strncpy(processos[N].numero, valor, TAM_MAX); break;
+                case 2: strncpy(processos[N].data_ajuizamento, valor, TAM_MAX); break;
+                case 3: strncpy(processos[N].id_classe, valor, TAM_MAX); break;
+                case 4: strncpy(processos[N].id_assunto, valor, TAM_MAX); break;
+                case 5: processos[N].ano_eleicao = atoi(valor); break;
+            }
+
+            campo++;
         }
 
-    }
-
-    ordenarPorId(p, qtd_processos);
-    FILE * saida = fopen("Ordenacao_id.csv", "w");
-    if (saida == NULL) {
-        printf("Erro ao criar arquivo.\n");
-        return 1;
-    }
-    for (int i = 0; i < qtd_processos; i++) {
-        fprintf(saida, "%d,\"%s\",%s,{%d},{%d},%d\n",
-            p[i].id, p[i].numero, p[i].data_ajuizamento,
-            p[i].id_classe, p[i].id_assunto, p[i].ano_eleicao);
+        N++;
     }
 
     fclose(arquivo);
-
-    fclose(saida);
-    printf("Aquivo 'Ordenacao_id gerado.\n'");
-
-    return 0;
+    return processos;
 }
 
-// Funções usadas para as operações //
-//Funções para ordenar por ID//
 
-void swapProcesso(Processos * a, Processos * b) {
-    Processos temp = * a;
-    * a = * b;
-    * b = temp;
+// Função auxiliar para trocar dois processos
+void Swap(Processo *a, Processo *b) {
+    Processo temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
-int particao_id(Processos v[], int inf, int sup) {
-    int pivot = v[(inf + sup) / 2].id;
+// Partição para QuickSort por ID
+int Particao(Processo *V, int inf, int sup) {
+    Processo Pivo = V[(inf + sup) / 2];
     int i = inf;
     int j = sup;
 
     while (i <= j) {
-        while (v[i].id < pivot) i++;
-        while (v[j].id > pivot) j--;
+        while (strcmp(V[i].id, Pivo.id) < 0) i++;
+        while (strcmp(V[j].id, Pivo.id) > 0) j--;
         if (i <= j) {
-            swapProcesso( & v[i], & v[j]);
+            Swap(&V[i], &V[j]);
             i++;
             j--;
         }
     }
-
     return i;
 }
 
-void quicksort_id(Processos v[], int inf, int sup) {
+// QuickSort crescente por ID
+void QuickSortID(Processo *V, int inf, int sup) {
     if (inf < sup) {
-        int p = particao_id(v, inf, sup);
-        quicksort_id(v, inf, p - 1);
-        quicksort_id(v, p, sup);
+        int P = Particao(V, inf, sup);
+        QuickSortID(V, inf, P - 1);
+        QuickSortID(V, P, sup);
     }
-}
-
-void ordenarPorId(Processos processos[], int qtd) {
-    quicksort_id(processos, 0, qtd - 1);
 }
