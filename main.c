@@ -38,11 +38,11 @@ int main() {
                 char id_classe[100];
                 printf("Digite o ID da classe: ");
                 scanf(" %s", id_classe);
-              //  QntdProcessosID_classe(processos, (unsigned char *)id_classe);
+                contarIdClasse(processos, (unsigned char *)id_classe);
                 break;
             }
             case 4:
-               // QntdProcessosID_assunto(processos);
+                QntdProcessosID_assunto(processos);
                 break;
             case 5:
               //  QntdAssuntosMultiplos(processos);

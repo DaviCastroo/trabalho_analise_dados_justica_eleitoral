@@ -156,3 +156,47 @@ void saidaID(Processo *processos, int qtdProcessos){
     free(processos);
     printf("Arquivo 'ordenado_por_id.csv' gerado com sucesso.\n");
 }
+
+int contarIdClasse(Processo *processos, unsigned char *string){
+int processosnaClasse = 0;
+for (int i = 0; i < NumProcesso; i++) {
+    if (strstr(processos[i].id_classe, string) != NULL)
+    processosnaClasse++;}
+printf("Ha %d processos ligados a classe '%s'.\n", processosnaClasse, string);
+}
+
+
+void QntdProcessosID_assunto(Processo *processos) {
+    int Qtd_total = 0;
+    for (int i = 0; i < NumProcesso; i++) {
+        Qtd_total++;
+    for (int j = 0; processos[i].id_assunto[j] != '\0'; j++) {
+        if (processos[i].id_assunto[j] == ',')
+            Qtd_total++;}
+         }
+   
+         int assuntos_diff[100]; // Assuntos únicos
+    int Qtd_diff = 0;
+    for (int i = 0; i < NumProcesso; i++) {
+    int temp[5] = {0};
+    int Qtd_adicionado = sscanf(processos[i].id_assunto, "%d,%d,%d,%d,%d",
+            &temp[0], &temp[1], &temp[2],
+            &temp[3], &temp[4]);
+
+        for (int j = 0; j < Qtd_adicionado; j++) {
+        int valor = temp[j];
+        int ja_existe = 0;
+            for (int k = 0; k < Qtd_diff; k++) {
+                if (assuntos_diff[k] == valor) {
+                    ja_existe = 1;
+                    break;
+                }
+            }
+            if (!ja_existe) {
+                assuntos_diff[Qtd_diff++] = valor;
+            }
+        }
+}
+    printf("Constam %d assuntos totais na base de dados e %d assuntos unicos.\\n", Qtd_total, Qtd_diff);
+}
+

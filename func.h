@@ -15,6 +15,8 @@ typedef struct {
 } Processo;
 
 // Prototipagem funções 
+void QntdProcessosID_assunto(Processo *processos);
+int contarIdClasse();
 void saidaID(Processo *processos, int qtdProcessos);
 Processo *nomeArquivo();
 Processo *salvaremStruct(const char *nomeArquivo);
