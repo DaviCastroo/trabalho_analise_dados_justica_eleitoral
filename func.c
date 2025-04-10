@@ -95,7 +95,7 @@ void Swap(Processo *a, Processo *b) {
 }
 
 // Partição para QuickSort por ID
-int Particao(Processo *V, int inf, int sup) {
+int ParticaoID(Processo *V, int inf, int sup) {
     Processo Pivo = V[(inf + sup) / 2];
     int i = inf;
     int j = sup;
@@ -115,8 +115,11 @@ int Particao(Processo *V, int inf, int sup) {
 // QuickSort crescente por ID
 void QuickSortID(Processo *V, int inf, int sup) {
     if (inf < sup) {
-        int P = Particao(V, inf, sup);
+        int P = ParticaoID(V, inf, sup);
         QuickSortID(V, inf, P - 1);
         QuickSortID(V, P, sup);
     }
 }
+
+void QuickSortData (){} // Mais recente ao mais antigo 
+
