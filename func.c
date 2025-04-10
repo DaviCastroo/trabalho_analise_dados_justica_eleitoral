@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-Processo *LerArquivo(const char *nomeArquivo) {
+// lê e guarda os dados em um struct // 
+Processo *salvaremStruct(const char *nomeArquivo) {
     int N = 0;
     char linha[2048];
 
@@ -86,15 +87,12 @@ Processo *LerArquivo(const char *nomeArquivo) {
     return processos;
 }
 
-
-// Função auxiliar para trocar dois processos
 void Swap(Processo *a, Processo *b) {
     Processo temp = *a;
     *a = *b;
     *b = temp;
 }
 
-// Partição para QuickSort por ID
 int ParticaoID(Processo *V, int inf, int sup) {
     Processo Pivo = V[(inf + sup) / 2];
     int i = inf;
@@ -111,7 +109,6 @@ int ParticaoID(Processo *V, int inf, int sup) {
     }
     return i;
 }
-
 // QuickSort crescente por ID
 void QuickSortID(Processo *V, int inf, int sup) {
     if (inf < sup) {
@@ -121,5 +118,41 @@ void QuickSortID(Processo *V, int inf, int sup) {
     }
 }
 
-void QuickSortData (){} // Mais recente ao mais antigo 
+Processo* nomeArquivo(){
+    char nome_arquivo[256];
 
+    printf("Digite o nome do arquivo CSV: ");
+    scanf("%255s", nome_arquivo);
+
+    Processo *processos = salvaremStruct(nome_arquivo);
+}
+
+void saidaID(Processo *processos, int qtdProcessos){
+    FILE *saida = fopen("ordenado_por_id.csv", "w");
+    if (!saida) {
+        printf("Erro ao criar o arquivo de saída.\n");
+        free(processos);
+        return;
+    }
+
+    fprintf(saida, "\"id\",\"numero\",\"data_ajuizamento\",\"id_classe\",\"id_assunto\",\"ano_eleicao\"\n");
+
+
+    for (int i = 0; i < qtdProcessos; i++) {
+        // Verifica se o processo está realmente preenchido
+        if (strlen(processos[i].id) == 0 || strlen(processos[i].numero) == 0) {
+            continue; // pula registro inválido
+        }
+    
+        fprintf(saida, "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d\n",
+                processos[i].id,
+                processos[i].numero,
+                processos[i].data_ajuizamento,
+                processos[i].id_classe,
+                processos[i].id_assunto,
+                processos[i].ano_eleicao);
+    }
+    fclose(saida);
+    free(processos);
+    printf("Arquivo 'ordenado_por_id.csv' gerado com sucesso.\n");
+}

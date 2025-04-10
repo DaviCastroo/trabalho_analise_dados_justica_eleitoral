@@ -4,6 +4,7 @@
 #define TAM_MAX 50
 #define NumProcesso 18392
 
+
 typedef struct {
     char id[TAM_MAX];
     char numero[TAM_MAX];
@@ -13,8 +14,10 @@ typedef struct {
     int ano_eleicao;
 } Processo;
 
-// Protótipos
-Processo *LerArquivo(const char *nomeArquivo);
+// Prototipagem funções 
+void saidaID(Processo *processos, int qtdProcessos);
+Processo *nomeArquivo();
+Processo *salvaremStruct(const char *nomeArquivo);
 void QuickSortID(Processo *V, int inf, int sup);
 void Swap(Processo *a, Processo *b);
 int Particao(Processo *V, int inf, int sup);

@@ -3,46 +3,67 @@
 #include <string.h>
 #include "func.h"
 
+
+
+
 int main() {
-    char nome_arquivo[256];
+    int opcao;
 
-    printf("Digite o nome do arquivo CSV: ");
-    scanf("%255s", nome_arquivo);
-
-    Processo *processos = LerArquivo(nome_arquivo);
+    Processo *processos = nomeArquivo();
     if (!processos) return 1;
+  
+    do {
+        printf("\n===== MENU INTERATIVO =====\n");
+        printf("1. Ordenar por ID (ordem crescente)\n");
+        printf("2. Ordenar por data de ajuizamento (mais atual primeiro)\n");
+        printf("3. Contar processos por ID de classe\n");
+        printf("4. Contar assuntos totais e unicos\n");
+        printf("5. Listar processos com multiplos assuntos\n");
+        printf("6. Dias de tramitacao de um processo\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
-    QuickSortID(processos, 0, NumProcesso - 1);
-
-    FILE *saida = fopen("ordenado_por_id.csv", "w");
-    if (!saida) {
-        printf("Erro ao criar o arquivo de saída.\n");
-        free(processos);
-        return 1;
-    }
-
-    fprintf(saida, "\"id\",\"numero\",\"data_ajuizamento\",\"id_classe\",\"id_assunto\",\"ano_eleicao\"\n");
-
-
-    for (int i = 0; i < NumProcesso; i++) {
-        // Verifica se o processo está realmente preenchido
-        if (strlen(processos[i].id) == 0 || strlen(processos[i].numero) == 0) {
-            continue; // pula registro inválido
+        switch(opcao) {
+            case 1:
+                QuickSortID(processos, 0, NumProcesso - 1);
+                saidaID(processos, NumProcesso);
+                printf("Processos ordenados por ID (crescente).\n");
+                break;
+            case 2:
+              //  QuickSortDataMaisAtual(processos, 0, NumProcesso - 1);
+                printf("Processos ordenados por data de ajuizamento (mais recente primeiro).\n");
+                break;
+            case 3: {
+                char id_classe[100];
+                printf("Digite o ID da classe: ");
+                scanf(" %s", id_classe);
+              //  QntdProcessosID_classe(processos, (unsigned char *)id_classe);
+                break;
+            }
+            case 4:
+               // QntdProcessosID_assunto(processos);
+                break;
+            case 5:
+              //  QntdAssuntosMultiplos(processos);
+                break;
+            case 6: {
+                char id_processo[100];
+                printf("Digite o ID do processo: ");
+                scanf(" %s", id_processo);
+               // QuantosDias(processos, (unsigned char *)id_processo);
+                break;
+            }
+            case 0:
+                printf("Encerrando o programa.\n");
+                break;
+            default:
+                printf("Opcao invalida. Tente novamente.\n");
         }
-    
-        fprintf(saida, "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d\n",
-                processos[i].id,
-                processos[i].numero,
-                processos[i].data_ajuizamento,
-                processos[i].id_classe,
-                processos[i].id_assunto,
-                processos[i].ano_eleicao);
-    }
-    
 
-    fclose(saida);
-    free(processos);
+    } while (opcao != 0);
 
-    printf("Arquivo 'ordenado_por_id.csv' gerado com sucesso.\n");
+    // criar função para as saidas
+
     return 0;
 }
